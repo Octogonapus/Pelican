@@ -15,8 +15,8 @@
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.lwjgl:lwjgl:natives-windows:3.1.2" level="project" />
     <orderEntry type="library" name="Gradle: org.lwjgl:lwjgl-glfw:3.1.2" level="project" />
     <orderEntry type="library" name="Gradle: org.lwjgl:lwjgl-jemalloc:3.1.2" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.lwjgl:lwjgl-assimp:natives-windows:3.1.2" level="project" />
     <orderEntry type="library" name="Gradle: org.lwjgl:lwjgl-lmdb:3.1.2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.lwjgl:lwjgl-assimp:natives-windows:3.1.2" level="project" />
     <orderEntry type="library" name="Gradle: org.lwjgl:lwjgl-nanovg:3.1.2" level="project" />
     <orderEntry type="library" name="Gradle: org.lwjgl:lwjgl-nfd:3.1.2" level="project" />
     <orderEntry type="library" name="Gradle: org.lwjgl:lwjgl-nuklear:3.1.2" level="project" />
