@@ -113,8 +113,6 @@ public class CoreDispatch {
                     isRunning = false;
                 }
 
-                //tick physics
-
                 if (frameCounter >= 1.0) {
                     frames = 0;
                     frameCounter = 0;
