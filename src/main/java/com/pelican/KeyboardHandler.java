@@ -21,7 +21,7 @@ public class KeyboardHandler {
                     glfwSetWindowShouldClose(windowHandle, true);
                 }
 
-                keyDown[key] = action == GLFW_PRESS || action == GLFW_RELEASE;
+                keyDown[key] = action == GLFW_PRESS || action == GLFW_REPEAT;
             }
         });
     }

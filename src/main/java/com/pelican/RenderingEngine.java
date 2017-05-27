@@ -88,8 +88,7 @@ public class RenderingEngine {
     private long lastTime = System.nanoTime();
     protected void render(int[] windowDims, float[] mousePos) {
         float dt = (float)((System.nanoTime() - lastTime) / 1E9);
-        System.out.println("" + dt);
-        float move = dt * 2.666f;
+        float move = dt * 0.01f;
 
         cameraMat.positiveZ(dir).negate().mul(move);
         dir.y = 0;
