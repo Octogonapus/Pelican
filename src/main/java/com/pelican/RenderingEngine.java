@@ -13,6 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.ARBFragmentShader.GL_FRAGMENT_SHADER_ARB;
+import static org.lwjgl.opengl.ARBShaderObjects.*;
+import static org.lwjgl.opengl.ARBVertexShader.GL_VERTEX_SHADER_ARB;
+import static org.lwjgl.opengl.ARBVertexShader.glEnableVertexAttribArrayARB;
+import static org.lwjgl.opengl.ARBVertexShader.glGetAttribLocationARB;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL32.GL_DEPTH_CLAMP;
 
@@ -61,23 +66,26 @@ public class RenderingEngine {
         glEnable(GL_DEPTH_CLAMP);
 //        glEnable(GL_TEXTURE_2D);
 
-//        program = glCreateProgramObjectARB();
-//        int vs = Shader.createShader("/shader/basic_vertex.vs", GL_VERTEX_SHADER_ARB),
-//                fs = Shader.createShader("/shader/basic_frag.fs", GL_FRAGMENT_SHADER_ARB);
-//        glAttachObjectARB(program, vs);
-//        glAttachObjectARB(program, fs);
-//        glLinkProgramARB(program);
-//
-//        int linkStatus = glGetObjectParameteriARB(program, GL_OBJECT_LINK_STATUS_ARB);
-//        String programLog = glGetInfoLogARB(program);
-//        if (programLog.trim().length() > 0) {
-//            System.err.println(programLog);
-//        }
-//        if (linkStatus == 0) {
-//            throw new AssertionError("Failed to link program");
-//        }
-//
-//        glUseProgramObjectARB(program);
+        program = glCreateProgramObjectARB();
+        int vs = Shader.createShader("/shader/basic_vertex.vs", GL_VERTEX_SHADER_ARB),
+                fs = Shader.createShader("/shader/basic_fragment.fs", GL_FRAGMENT_SHADER_ARB);
+        glAttachObjectARB(program, vs);
+        glAttachObjectARB(program, fs);
+        glLinkProgramARB(program);
+
+        glEnableVertexAttribArrayARB(glGetAttribLocationARB(program, "aVertex"));
+        glEnableVertexAttribArrayARB(glGetAttribLocationARB(program, "aNormal"));
+
+        int linkStatus = glGetObjectParameteriARB(program, GL_OBJECT_LINK_STATUS_ARB);
+        String programLog = glGetInfoLogARB(program);
+        if (programLog.trim().length() > 0) {
+            System.err.println(programLog);
+        }
+        if (linkStatus == 0) {
+            throw new AssertionError("Failed to link program");
+        }
+
+        glUseProgramObjectARB(program);
     }
 
     public void addEntity(Entity entity) {
@@ -124,10 +132,10 @@ public class RenderingEngine {
         glViewport(0, 0, windowDims[0], windowDims[1]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-//        entities.forEach(entity -> {
-//            entity.render(program);
-//        });
-        renderGrid();
+        entities.forEach(entity -> {
+            entity.render(program);
+        });
+//        renderGrid();
 
         glfwSwapBuffers(windowHandle);
     }

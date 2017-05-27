@@ -1,6 +1,6 @@
 # Blender v2.78 (sub 0) OBJ File: 'push rod screw mount.blend'
 # www.blender.org
-mtllib push rod screw mount.mtl
+mtllib push_rod_screw_mount.mtl
 o Screw_hole_Cylinder.005
 v 0.000000 1.973975 -2.150000
 v 0.000000 12.073976 -2.150000

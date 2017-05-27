@@ -25,7 +25,7 @@ public class Model {
     public Model(String fileName) {
         // Assimp will be able to find the corresponding mtl file if we call aiImportFile this way.
         scene = aiImportFile(new File(getClass().getResource(fileName).getPath()).getAbsolutePath(),
-                             aiProcess_JoinIdenticalVertices |aiProcess_Triangulate);
+                             aiProcess_JoinIdenticalVertices | aiProcess_Triangulate);
 
         if (scene == null) {
             throw new IllegalStateException(aiGetErrorString());
