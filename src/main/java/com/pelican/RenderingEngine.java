@@ -50,17 +50,16 @@ public class RenderingEngine {
             pos = new Vector3f(0, 0, 0);
 
             GL.createCapabilities();
-            glMatrixMode(GL_PROJECTION);
-            cameraMat.setPerspective((float) Math.toRadians(fov), (float) pWidth.get(0) / pHeight.get(0), 0.01f, 100.0f).get(cameraBuf);
         } //Stack frame is automatically popped
 
         glClearColor(0.97f, 0.97f, 0.97f, 1.0f);
-        glFrontFace(GL_CW);
-        glCullFace(GL_BACK);
-        glEnable(GL_CULL_FACE);
+//        glFrontFace(GL_CW);
+//        glCullFace(GL_BACK);
+//        glEnable(GL_CULL_FACE);
         glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LESS);
         glEnable(GL_DEPTH_CLAMP);
-        glEnable(GL_TEXTURE_2D);
+//        glEnable(GL_TEXTURE_2D);
 
 //        program = glCreateProgramObjectARB();
 //        int vs = Shader.createShader("/shader/basic_vertex.vs", GL_VERTEX_SHADER_ARB),
@@ -86,8 +85,9 @@ public class RenderingEngine {
     }
 
     private long lastTime = System.nanoTime();
+
     protected void render(int[] windowDims, float[] mousePos) {
-        float dt = (float)((System.nanoTime() - lastTime) / 1E9);
+        float dt = (float) ((System.nanoTime() - lastTime) / 1E9);
         float move = dt * 0.01f;
 
         cameraMat.positiveZ(dir).negate().mul(move);
@@ -111,6 +111,9 @@ public class RenderingEngine {
         camRotX = mousePos[1];
         camRotY = mousePos[0];
 
+        glMatrixMode(GL_PROJECTION);
+        cameraMat.setPerspective((float) Math.toRadians(45), (float) windowDims[0] / windowDims[1], 0.01f, 100.0f).get(cameraBuf);
+
         glMatrixMode(GL_MODELVIEW);
         cameraMat.identity()
                  .rotateX(camRotX)
@@ -130,6 +133,7 @@ public class RenderingEngine {
     }
 
     private int dl = -1;
+
     void renderGrid() {
         if (dl == -1) {
             dl = glGenLists(1);
