@@ -93,12 +93,15 @@ public class RenderingEngine {
     }
 
     private long lastTime = System.nanoTime();
-    private FloatBuffer projMatBuf = BufferUtils.createFloatBuffer(16);
-    private Matrix4f projMat = new Matrix4f(projMatBuf);
+
+    private FloatBuffer projMatBuf = BufferUtils.createFloatBuffer(16),
+            viewProjMatBuf = BufferUtils.createFloatBuffer(16);
+    private Matrix4f projMat = new Matrix4f(projMatBuf),
+            viewProjMat = new Matrix4f(viewProjMatBuf);
 
     protected void render(int[] windowDims, float[] mousePos) {
         float dt = (float) ((System.nanoTime() - lastTime) / 1E9);
-        float move = dt * 0.01f;
+        float move = dt * 0.05f;
 
         cameraMat.positiveZ(dir).negate().mul(move);
         dir.y = 0;
@@ -121,53 +124,22 @@ public class RenderingEngine {
         camRotX = mousePos[1];
         camRotY = mousePos[0];
 
-//        glMatrixMode(GL_PROJECTION);
         projMat.setPerspective((float) Math.toRadians(45), (float) windowDims[0] / windowDims[1], 0.01f, 100.0f).get(projMatBuf);
 
-//        glMatrixMode(GL_MODELVIEW);
         cameraMat.identity()
                  .rotateX(camRotX)
                  .rotateY(camRotY)
                  .translate(-pos.x, -pos.y, -pos.z);
-//        glLoadMatrixf(cameraMat.get(cameraBuf));
+
+        glUniformMatrix4fvARB(glGetUniformLocationARB(program, "uViewProjectionMatrix"), false, projMat.mul(cameraMat, viewProjMat).get(viewProjMatBuf));
 
         glViewport(0, 0, windowDims[0], windowDims[1]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         entities.forEach(entity -> {
-            entity.render(program, pos, cameraMat, projMat);
+            entity.render(program, pos);
         });
-//        renderGrid();
 
         glfwSwapBuffers(windowHandle);
-    }
-
-    private int dl = -1;
-
-    void renderGrid() {
-        if (dl == -1) {
-            dl = glGenLists(1);
-            glNewList(dl, GL_COMPILE);
-            glBegin(GL_LINES);
-            glColor3f(0.2f, 0.2f, 0.2f);
-            int gridSize = 40;
-            for (int i = -gridSize; i <= gridSize; i++) {
-                glVertex3f(-gridSize, 0.0f, i);
-                glVertex3f(gridSize, 0.0f, i);
-                glVertex3f(i, 0.0f, -gridSize);
-                glVertex3f(i, 0.0f, gridSize);
-            }
-            glColor3f(0.5f, 0.5f, 0.5f);
-            for (int i = -gridSize; i <= gridSize; i++) {
-                float ceiling = 3.0f;
-                glVertex3f(-gridSize, ceiling, i);
-                glVertex3f(gridSize, ceiling, i);
-                glVertex3f(i, ceiling, -gridSize);
-                glVertex3f(i, ceiling, gridSize);
-            }
-            glEnd();
-            glEndList();
-        }
-        glCallList(dl);
     }
 }
