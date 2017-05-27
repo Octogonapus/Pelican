@@ -88,6 +88,7 @@ public class RenderingEngine {
     private long lastTime = System.nanoTime();
     protected void render(int[] windowDims, float[] mousePos) {
         float dt = (float)((System.nanoTime() - lastTime) / 1E9);
+        System.out.println("" + dt);
         float move = dt * 2.666f;
 
         cameraMat.positiveZ(dir).negate().mul(move);
@@ -107,8 +108,9 @@ public class RenderingEngine {
             pos.add(right);
         }
 
-        camRotX = mousePos[0];
-        camRotY = mousePos[1];
+        //The rotation should be x->y, y->x
+        camRotX = mousePos[1];
+        camRotY = mousePos[0];
 
         glMatrixMode(GL_MODELVIEW);
         cameraMat.identity()
