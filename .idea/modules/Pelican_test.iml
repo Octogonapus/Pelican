@@ -4,6 +4,7 @@
     <output-test url="file://$MODULE_DIR$/../../build/classes/test" />
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../src/test">
+      <sourceFolder url="file://$MODULE_DIR$/../../src/test" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/../../src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/../../src/test/resources" type="java-test-resource" />
     </content>
@@ -23,8 +24,8 @@
     <orderEntry type="library" name="Gradle: org.lwjgl:lwjgl-nuklear:3.1.2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.lwjgl:lwjgl-glfw:natives-windows:3.1.2" level="project" />
     <orderEntry type="library" name="Gradle: org.lwjgl:lwjgl-openal:3.1.2" level="project" />
-    <orderEntry type="library" name="Gradle: org.lwjgl:lwjgl-opencl:3.1.2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.lwjgl:lwjgl-jemalloc:natives-windows:3.1.2" level="project" />
+    <orderEntry type="library" name="Gradle: org.lwjgl:lwjgl-opencl:3.1.2" level="project" />
     <orderEntry type="library" name="Gradle: org.lwjgl:lwjgl-opengl:3.1.2" level="project" />
     <orderEntry type="library" name="Gradle: org.lwjgl:lwjgl-par:3.1.2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.lwjgl:lwjgl-lmdb:natives-windows:3.1.2" level="project" />

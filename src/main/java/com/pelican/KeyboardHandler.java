@@ -7,6 +7,7 @@ import static org.lwjgl.glfw.GLFW.*;
 /**
  * @author Ryan Benasutti
  * @since 05-27-2017
+ * License terms: https://www.github.com/Octogonapus/Pelican/blob/master/LICENSE.md
  */
 public class KeyboardHandler {
     private static boolean[] keyDown = new boolean[GLFW_KEY_LAST + 1];

@@ -17,6 +17,6 @@ public class Entity {
     }
 
     protected void render(int program) {
-        model.render(program);
+//        model.render(program);
     }
 }
