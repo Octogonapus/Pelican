@@ -93,6 +93,8 @@ public class RenderingEngine {
     }
 
     private long lastTime = System.nanoTime();
+    private FloatBuffer projMatBuf = BufferUtils.createFloatBuffer(16);
+    private Matrix4f projMat = new Matrix4f(projMatBuf);
 
     protected void render(int[] windowDims, float[] mousePos) {
         float dt = (float) ((System.nanoTime() - lastTime) / 1E9);
@@ -119,21 +121,21 @@ public class RenderingEngine {
         camRotX = mousePos[1];
         camRotY = mousePos[0];
 
-        glMatrixMode(GL_PROJECTION);
-        cameraMat.setPerspective((float) Math.toRadians(45), (float) windowDims[0] / windowDims[1], 0.01f, 100.0f).get(cameraBuf);
+//        glMatrixMode(GL_PROJECTION);
+        projMat.setPerspective((float) Math.toRadians(45), (float) windowDims[0] / windowDims[1], 0.01f, 100.0f).get(projMatBuf);
 
-        glMatrixMode(GL_MODELVIEW);
+//        glMatrixMode(GL_MODELVIEW);
         cameraMat.identity()
                  .rotateX(camRotX)
                  .rotateY(camRotY)
                  .translate(-pos.x, -pos.y, -pos.z);
-        glLoadMatrixf(cameraMat.get(cameraBuf));
+//        glLoadMatrixf(cameraMat.get(cameraBuf));
 
         glViewport(0, 0, windowDims[0], windowDims[1]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         entities.forEach(entity -> {
-            entity.render(program);
+            entity.render(program, pos, cameraMat, projMat);
         });
 //        renderGrid();
 

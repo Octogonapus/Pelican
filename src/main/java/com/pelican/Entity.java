@@ -22,10 +22,7 @@ public class Entity {
     private Model model;
 
     Matrix4f modelMatrix = new Matrix4f().rotateY(0.5f * (float) Math.PI).scale(1.5f, 1.5f, 1.5f);
-    Matrix4f viewMatrix = new Matrix4f();
-    Matrix4f projectionMatrix = new Matrix4f();
     Matrix4f viewProjectionMatrix = new Matrix4f();
-    Vector3f viewPosition = new Vector3f();
     Vector3f lightPosition = new Vector3f(-5f, 5f, 5f);
 
     private FloatBuffer modelMatrixBuffer = BufferUtils.createFloatBuffer(4 * 4);
@@ -43,14 +40,8 @@ public class Entity {
         return this;
     }
 
-    protected void render(int program) {
-        projectionMatrix.setPerspective((float) Math.toRadians(45), (float) CoreDispatch.windowDims[0] / CoreDispatch.windowDims[1], 0.01f,
-                                        100.0f);
-        float rotation = (CoreDispatch.mousePos[0] / CoreDispatch.windowDims[0] - 0.5f) * 20f * (float) Math.PI;
-        viewPosition.set(10f * (float) Math.cos(rotation), 10f, 10f * (float) Math.sin(rotation));
-        viewMatrix.setLookAt(viewPosition.x, viewPosition.y, viewPosition.z, 0f, 0f, 0f, 0f, 1f,
-                             0f);
-        projectionMatrix.mul(viewMatrix, viewProjectionMatrix);
+    protected void render(int program, Vector3f viewPos, Matrix4f viewMat, Matrix4f projMat) {
+        projMat.mul(viewMat, viewProjectionMatrix);
         for (Mesh mesh : model.meshes) {
             glBindBufferARB(GL_ARRAY_BUFFER_ARB, mesh.vertexArrayBuffer);
             glVertexAttribPointerARB(glGetAttribLocationARB(program, "aVertex"), 3, GL_FLOAT, false, 0, 0);
@@ -63,7 +54,7 @@ public class Entity {
             normalMatrix.set(modelMatrix).invert().transpose();
             glUniformMatrix3fvARB(glGetUniformLocationARB(program, "uNormalMatrix"), false, normalMatrix.get(normalMatrixBuffer));
             glUniform3fvARB(glGetUniformLocationARB(program, "uLightPosition"), lightPosition.get(lightPositionBuffer));
-            glUniform3fvARB(glGetUniformLocationARB(program, "uViewPosition"), viewPosition.get(viewPositionBuffer));
+            glUniform3fvARB(glGetUniformLocationARB(program, "uViewPosition"), viewPos.get(viewPositionBuffer));
 
             Material material = model.materials.get(mesh.mesh.mMaterialIndex());
             nglUniform3fvARB(glGetUniformLocationARB(program, "uAmbientColor"), 1, material.mAmbientColor.address());
