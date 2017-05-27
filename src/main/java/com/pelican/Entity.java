@@ -44,6 +44,13 @@ public class Entity {
     }
 
     protected void render(int program) {
+        projectionMatrix.setPerspective((float) Math.toRadians(45), (float) CoreDispatch.windowDims[0] / CoreDispatch.windowDims[1], 0.01f,
+                                        100.0f);
+        float rotation = (CoreDispatch.mousePos[0] / CoreDispatch.windowDims[0] - 0.5f) * 20f * (float) Math.PI;
+        viewPosition.set(10f * (float) Math.cos(rotation), 10f, 10f * (float) Math.sin(rotation));
+        viewMatrix.setLookAt(viewPosition.x, viewPosition.y, viewPosition.z, 0f, 0f, 0f, 0f, 1f,
+                             0f);
+        projectionMatrix.mul(viewMatrix, viewProjectionMatrix);
         for (Mesh mesh : model.meshes) {
             glBindBufferARB(GL_ARRAY_BUFFER_ARB, mesh.vertexArrayBuffer);
             glVertexAttribPointerARB(glGetAttribLocationARB(program, "aVertex"), 3, GL_FLOAT, false, 0, 0);

@@ -18,8 +18,8 @@ import static org.lwjgl.system.MemoryUtil.NULL;
  * License terms: https://www.github.com/Octogonapus/Pelican/blob/master/LICENSE.md
  */
 public class CoreDispatch {
-    private int[] windowDims = new int[2];
-    private float[] mousePos = new float[2];
+    static int[] windowDims = new int[2];
+    static float[] mousePos = new float[2];
     private boolean isRunning;
     private double frameTime;
     private long windowHandle;
