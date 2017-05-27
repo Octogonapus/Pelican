@@ -13,7 +13,7 @@ public class Main {
         RenderingEngine renderingEngine;
         try {
             renderingEngine = new RenderingEngine(core.getWindowHandle(), 45);
-            renderingEngine.addEntity(new Entity().loadModelFromFile("/model/test.stl"));
+//            renderingEngine.addEntity(new Entity().loadModelFromFile("/model/test.stl"));
             core.start(renderingEngine);
         } catch (IOException e) {
             e.printStackTrace();

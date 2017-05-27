@@ -147,7 +147,7 @@ public class CoreDispatch {
 
             if (render) {
                 //render new frame
-                renderingEngine.render();
+                renderingEngine.render(windowDims, mousePos);
                 frames++;
             } else {
                 try {

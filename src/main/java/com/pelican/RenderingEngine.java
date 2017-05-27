@@ -1,6 +1,7 @@
 package com.pelican;
 
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
@@ -11,11 +12,7 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.lwjgl.glfw.GLFW.glfwGetWindowSize;
-import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
-import static org.lwjgl.opengl.ARBFragmentShader.GL_FRAGMENT_SHADER_ARB;
-import static org.lwjgl.opengl.ARBShaderObjects.*;
-import static org.lwjgl.opengl.ARBVertexShader.GL_VERTEX_SHADER_ARB;
+import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL32.GL_DEPTH_CLAMP;
 
@@ -32,7 +29,7 @@ public class RenderingEngine {
 
     private Matrix4f cameraMat;
     private FloatBuffer cameraBuf;
-    private float camPosX = 0, camPosY = 0, camPosZ = 0;
+    private Vector3f dir, right, pos;
     private float camRotX = 0, camRotY = 0;
 
     public RenderingEngine(long windowHandle, float fov) throws IOException {
@@ -47,13 +44,17 @@ public class RenderingEngine {
 
             cameraBuf = BufferUtils.createFloatBuffer(16);
             cameraMat = new Matrix4f(cameraBuf);
+
+            dir = new Vector3f();
+            right = new Vector3f();
+            pos = new Vector3f(0, 0, 0);
+
+            GL.createCapabilities();
             glMatrixMode(GL_PROJECTION);
             cameraMat.setPerspective((float) Math.toRadians(fov), (float) pWidth.get(0) / pHeight.get(0), 0.01f, 100.0f).get(cameraBuf);
         } //Stack frame is automatically popped
 
-        GL.createCapabilities();
-
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClearColor(0.97f, 0.97f, 0.97f, 1.0f);
         glFrontFace(GL_CW);
         glCullFace(GL_BACK);
         glEnable(GL_CULL_FACE);
@@ -61,37 +62,62 @@ public class RenderingEngine {
         glEnable(GL_DEPTH_CLAMP);
         glEnable(GL_TEXTURE_2D);
 
-        program = glCreateProgramObjectARB();
-        int vs = Shader.createShader("/shader/basic_vertex.vs", GL_VERTEX_SHADER_ARB),
-                fs = Shader.createShader("/shader/basic_frag.fs", GL_FRAGMENT_SHADER_ARB);
-        glAttachObjectARB(program, vs);
-        glAttachObjectARB(program, fs);
-        glLinkProgramARB(program);
-
-        int linkStatus = glGetObjectParameteriARB(program, GL_OBJECT_LINK_STATUS_ARB);
-        String programLog = glGetInfoLogARB(program);
-        if (programLog.trim().length() > 0) {
-            System.err.println(programLog);
-        }
-        if (linkStatus == 0) {
-            throw new AssertionError("Failed to link program");
-        }
-
-        glUseProgramObjectARB(program);
+//        program = glCreateProgramObjectARB();
+//        int vs = Shader.createShader("/shader/basic_vertex.vs", GL_VERTEX_SHADER_ARB),
+//                fs = Shader.createShader("/shader/basic_frag.fs", GL_FRAGMENT_SHADER_ARB);
+//        glAttachObjectARB(program, vs);
+//        glAttachObjectARB(program, fs);
+//        glLinkProgramARB(program);
+//
+//        int linkStatus = glGetObjectParameteriARB(program, GL_OBJECT_LINK_STATUS_ARB);
+//        String programLog = glGetInfoLogARB(program);
+//        if (programLog.trim().length() > 0) {
+//            System.err.println(programLog);
+//        }
+//        if (linkStatus == 0) {
+//            throw new AssertionError("Failed to link program");
+//        }
+//
+//        glUseProgramObjectARB(program);
     }
 
     public void addEntity(Entity entity) {
         entities.add(entity);
     }
 
-    protected void render() {
+    private long lastTime = System.nanoTime();
+    protected void render(int[] windowDims, float[] mousePos) {
+        float dt = (float)((System.nanoTime() - lastTime) / 1E9);
+        float move = dt * 2.666f;
+
+        cameraMat.positiveZ(dir).negate().mul(move);
+        dir.y = 0;
+        cameraMat.positiveX(right).mul(move);
+
+        if (KeyboardHandler.get(GLFW_KEY_W)) {
+            pos.add(dir);
+        }
+        if (KeyboardHandler.get(GLFW_KEY_S)) {
+            pos.sub(dir);
+        }
+        if (KeyboardHandler.get(GLFW_KEY_A)) {
+            pos.sub(right);
+        }
+        if (KeyboardHandler.get(GLFW_KEY_D)) {
+            pos.add(right);
+        }
+
+        camRotX = mousePos[0];
+        camRotY = mousePos[1];
+
         glMatrixMode(GL_MODELVIEW);
         cameraMat.identity()
                  .rotateX(camRotX)
                  .rotateY(camRotY)
-                 .translate(-camPosX, -camPosY, -camPosZ);
+                 .translate(-pos.x, -pos.y, -pos.z);
         glLoadMatrixf(cameraMat.get(cameraBuf));
 
+        glViewport(0, 0, windowDims[0], windowDims[1]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 //        entities.forEach(entity -> {
