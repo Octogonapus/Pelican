@@ -1,12 +1,15 @@
-#version 110
+#version 330 core
+
+out vec4 fragColor;
 
 uniform vec3 uLightPosition;
 uniform vec3 uViewPosition;
 uniform vec3 uAmbientColor;
 uniform vec3 uDiffuseColor;
 uniform vec3 uSpecularColor;
-varying vec3 vPosition;
-varying vec3 vNormal;
+
+in vec3 vPosition;
+in vec3 vNormal;
 
 void main() {
     float ambientStrength = 0.5;
@@ -21,5 +24,5 @@ void main() {
     vec3 reflectDirection = reflect(-lightDirection, normal);
     vec3 specularColor = specularStrength
             * pow(max(dot(viewDirection, reflectDirection), 0.0), shininess) * uSpecularColor;
-    gl_FragColor = vec4(ambientColor + diffuseColor + specularColor, 1.0);
+    fragColor = vec4(ambientColor + diffuseColor + specularColor, 1.0);
 }

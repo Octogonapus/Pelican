@@ -45,9 +45,9 @@ public class Entity {
             glBindBufferARB(GL_ARRAY_BUFFER_ARB, mesh.normalArrayBuffer);
             glVertexAttribPointerARB(glGetAttribLocationARB(program, "aNormal"), 3, GL_FLOAT, false, 0, 0);
 
-            glUniformMatrix4fvARB(glGetUniformLocationARB(program, "uModelMatrix"), false, modelMatrix.get(modelMatrixBuffer));
+            glUniformMatrix4fvARB(glGetUniformLocationARB(program, "model"), false, modelMatrix.get(modelMatrixBuffer));
             normalMatrix.set(modelMatrix).invert().transpose();
-            glUniformMatrix3fvARB(glGetUniformLocationARB(program, "uNormalMatrix"), false, normalMatrix.get(normalMatrixBuffer));
+            glUniformMatrix3fvARB(glGetUniformLocationARB(program, "normal"), false, normalMatrix.get(normalMatrixBuffer));
             glUniform3fvARB(glGetUniformLocationARB(program, "uLightPosition"), lightPosition.get(lightPositionBuffer));
             glUniform3fvARB(glGetUniformLocationARB(program, "uViewPosition"), viewPos.get(viewPositionBuffer));
 

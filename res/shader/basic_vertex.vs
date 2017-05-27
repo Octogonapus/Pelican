@@ -1,16 +1,18 @@
-#version 110
+#version 330 core
 
-attribute vec4 aVertex;
-attribute vec3 aNormal;
-uniform mat4 uModelMatrix;
-uniform mat4 uViewProjectionMatrix;
-uniform mat3 uNormalMatrix;
-varying vec3 vPosition;
-varying vec3 vNormal;
+layout (location = 0) in vec4 aVertex;
+layout (location = 1) in vec3 aNormal;
+
+uniform mat4 model;
+uniform mat4 viewProj;
+uniform mat3 normal;
+
+out vec3 vPosition;
+out vec3 vNormal;
 
 void main() {
-    vec4 modelPosition = uModelMatrix * aVertex;
-    gl_Position = uViewProjectionMatrix * modelPosition;
+    vec4 modelPosition = model * aVertex;
+    gl_Position = viewProj * modelPosition;
     vPosition = modelPosition.xyz;
-    vNormal = uNormalMatrix * aNormal;
+    vNormal = normal * aNormal;
 }

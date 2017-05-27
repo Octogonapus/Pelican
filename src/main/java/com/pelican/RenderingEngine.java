@@ -131,7 +131,7 @@ public class RenderingEngine {
                  .rotateY(camRotY)
                  .translate(-pos.x, -pos.y, -pos.z);
 
-        glUniformMatrix4fvARB(glGetUniformLocationARB(program, "uViewProjectionMatrix"), false, projMat.mul(cameraMat, viewProjMat).get(viewProjMatBuf));
+        glUniformMatrix4fvARB(glGetUniformLocationARB(program, "viewProj"), false, projMat.mul(cameraMat, viewProjMat).get(viewProjMatBuf));
 
         glViewport(0, 0, windowDims[0], windowDims[1]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
