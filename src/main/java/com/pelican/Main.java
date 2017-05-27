@@ -1,5 +1,7 @@
 package com.pelican;
 
+import java.io.IOException;
+
 /**
  * @author Ryan Benasutti
  * @since 05-24-2017
@@ -7,7 +9,14 @@ package com.pelican;
  */
 public class Main {
     public static void main(String[] args) {
-        CoreDispatch core = new CoreDispatch(480, 360, 9999);
-        core.start();
+        CoreDispatch core = new CoreDispatch(480, 360, 144);
+        RenderingEngine renderingEngine;
+        try {
+            renderingEngine = new RenderingEngine(core.getWindowHandle(), 45);
+            renderingEngine.addEntity(new Entity().loadModelFromFile("/model/test.stl"));
+            core.start(renderingEngine);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

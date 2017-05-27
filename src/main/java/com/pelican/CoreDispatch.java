@@ -1,6 +1,8 @@
 package com.pelican;
 
+import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.system.MemoryStack;
 
@@ -16,17 +18,26 @@ import static org.lwjgl.system.MemoryUtil.NULL;
  * License terms: https://www.github.com/Octogonapus/Pelican/blob/master/LICENSE.md
  */
 public class CoreDispatch {
+    private int[] windowDims = new int[2];
+    private float[] mousePos = new float[2];
     private boolean isRunning;
     private double frameTime;
     private long windowHandle;
+
     private RenderingEngine renderingEngine;
 
+    private GLFWErrorCallback errorCallback;
+    private GLFWFramebufferSizeCallback fbCallback;
+    private GLFWCursorPosCallback cpCallback;
+
     public CoreDispatch(int width, int height, double frameCap) {
+        windowDims[0] = width;
+        windowDims[1] = height;
         isRunning = false;
         frameTime = 1.0 / frameCap;
 
         //Error callback to print to error stream
-        GLFWErrorCallback.createPrint(System.err).set();
+        glfwSetErrorCallback(errorCallback = GLFWErrorCallback.createPrint(System.err));
 
         //Init GLFW
         if (!glfwInit()) {
@@ -34,6 +45,8 @@ public class CoreDispatch {
         }
 
         //Configure GLFW
+        glfwDefaultWindowHints();
+        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
         //Create the window
@@ -42,12 +55,26 @@ public class CoreDispatch {
             throw new Error("Failed to create the GLFW Window!");
         }
 
-        //Escape key callback to close window
-        glfwSetKeyCallback(windowHandle, ((window, key, scancode, action, mods) -> {
-            if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
-                glfwSetWindowShouldClose(window, true);
+        //Keyboard key press and release handler
+        KeyboardHandler.init(windowHandle);
+
+        glfwSetFramebufferSizeCallback(windowHandle, fbCallback = new GLFWFramebufferSizeCallback() {
+            @Override
+            public void invoke(long window, int width, int height) {
+                if (width > 0 && height > 0) {
+                    windowDims[0] = width;
+                    windowDims[1] = height;
+                }
             }
-        }));
+        });
+
+        glfwSetCursorPosCallback(windowHandle, cpCallback = new GLFWCursorPosCallback() {
+            @Override
+            public void invoke(long window, double xpos, double ypos) {
+                mousePos[0] = (float) xpos / windowDims[0];
+                mousePos[1] = (float) ypos / windowDims[1];
+            }
+        });
 
         //New frame on thread stack
         try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -62,20 +89,19 @@ public class CoreDispatch {
         } //Stack frame is automatically popped
 
         //Use the window as our new context
+        glfwSetInputMode(windowHandle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         glfwMakeContextCurrent(windowHandle);
         glfwSwapInterval(0);
         glfwShowWindow(windowHandle);
-
-        //Init rendering engine
-        renderingEngine = new RenderingEngine(windowHandle);
     }
 
-    public void start() {
+    public void start(RenderingEngine renderingEngine) {
         if (isRunning) {
             return;
         }
 
         isRunning = true;
+        this.renderingEngine = renderingEngine;
         loop();
     }
 
@@ -136,5 +162,9 @@ public class CoreDispatch {
         glfwDestroyWindow(windowHandle);
         glfwTerminate();
         glfwSetErrorCallback(null).free();
+    }
+
+    public long getWindowHandle() {
+        return windowHandle;
     }
 }
