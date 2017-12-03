@@ -20,6 +20,9 @@ class CoreDispatch(width: Int, height: Int, frameCap: Double) {
 
     private var renderingEngine: RenderingEngine? = null
 
+    private var windowDims = IntArray(2)
+    private var mousePos = FloatArray(2)
+
     init {
         windowDims[0] = width
         windowDims[1] = height
@@ -46,7 +49,7 @@ class CoreDispatch(width: Int, height: Int, frameCap: Double) {
         }
 
         //Keyboard key press and release handler
-        KeyboardHandler.init(windowHandle)
+        KeyboardHandler.init(this)
 
         glfwSetFramebufferSizeCallback(windowHandle, object : GLFWFramebufferSizeCallback() {
             override fun invoke(window: Long, width: Int, height: Int) {
@@ -103,10 +106,10 @@ class CoreDispatch(width: Int, height: Int, frameCap: Double) {
 
         var lastTime = glfwGetTime()
         var unprocessedTime = 0.0
-
         var render: Boolean
         var startTime: Double
         var passedTime: Double
+
         while (isRunning) {
             render = false
 
@@ -154,8 +157,4 @@ class CoreDispatch(width: Int, height: Int, frameCap: Double) {
         glfwSetErrorCallback(null).free()
     }
 
-    companion object {
-        internal var windowDims = IntArray(2)
-        internal var mousePos = FloatArray(2)
-    }
 }

@@ -24,15 +24,13 @@ class RenderingEngine(private val windowHandle: Long, private val fov: Double) {
     private val program: Int
     private val entities: MutableList<Entity>
 
-    private var cameraMat: Matrix4f? = null
-    private var cameraBuf: FloatBuffer? = null
-    private var dir: Vector3f? = null
-    private var right: Vector3f? = null
-    private var pos: Vector3f? = null
+    private var cameraBuf: FloatBuffer = BufferUtils.createFloatBuffer(16)
+    private var cameraMat: Matrix4f = Matrix4f(cameraBuf)
+    private var dir: Vector3f = Vector3f()
+    private var right: Vector3f = Vector3f()
+    private var pos: Vector3f = Vector3f(0f, 0f, 0f)
     private var camRotX = 0f
     private var camRotY = 0f
-
-    private val lastTime = System.nanoTime()
 
     private val projMatBuf = BufferUtils.createFloatBuffer(16)
     private val viewProjMatBuf = BufferUtils.createFloatBuffer(16)
@@ -47,13 +45,6 @@ class RenderingEngine(private val windowHandle: Long, private val fov: Double) {
             val pWidth = stack.mallocInt(1)
             val pHeight = stack.mallocInt(1)
             glfwGetWindowSize(windowHandle, pWidth, pHeight)
-
-            cameraBuf = BufferUtils.createFloatBuffer(16)
-            cameraMat = Matrix4f(cameraBuf!!)
-
-            dir = Vector3f()
-            right = Vector3f()
-            pos = Vector3f(0f, 0f, 0f)
 
             GL.createCapabilities()
         } //Stack frame is automatically popped
@@ -96,40 +87,47 @@ class RenderingEngine(private val windowHandle: Long, private val fov: Double) {
     fun render(windowDims: IntArray, mousePos: FloatArray, dt: Float) {
         val move = dt * 0.05f
 
-        cameraMat!!.positiveZ(dir!!).negate().mul(move)
-        dir!!.y = 0f
-        cameraMat!!.positiveX(right!!).mul(move)
+        cameraMat.positiveZ(dir).negate().mul(move)
+        dir.y = 0f
+        cameraMat.positiveX(right).mul(move)
 
         if (KeyboardHandler[GLFW_KEY_W]) {
-            pos!!.add(dir!!)
+            pos.add(dir)
         }
         if (KeyboardHandler[GLFW_KEY_S]) {
-            pos!!.sub(dir!!)
+            pos.sub(dir)
         }
         if (KeyboardHandler[GLFW_KEY_A]) {
-            pos!!.sub(right!!)
+            pos.sub(right)
         }
         if (KeyboardHandler[GLFW_KEY_D]) {
-            pos!!.add(right!!)
+            pos.add(right)
         }
 
         //The rotation should be x->y, y->x
         camRotX = mousePos[1]
         camRotY = mousePos[0]
 
-        projMat.setPerspective(Math.toRadians(fov).toFloat(), windowDims[0].toFloat() / windowDims[1], 0.01f, 100.0f).get(projMatBuf)
+        projMat.setPerspective(
+                Math.toRadians(fov).toFloat(),
+                windowDims[0].toFloat() / windowDims[1],
+                0.01f,
+                100.0f).get(projMatBuf)
 
-        cameraMat!!.identity()
+        cameraMat.identity()
                 .rotateX(camRotX)
                 .rotateY(camRotY)
-                .translate(-pos!!.x, -pos!!.y, -pos!!.z)
+                .translate(-pos.x, -pos.y, -pos.z)
 
-        glUniformMatrix4fvARB(glGetUniformLocationARB(program, "viewProj"), false, projMat.mul(cameraMat, viewProjMat).get(viewProjMatBuf))
+        glUniformMatrix4fvARB(
+                glGetUniformLocationARB(program, "viewProj"),
+                false,
+                projMat.mul(cameraMat, viewProjMat).get(viewProjMatBuf))
 
         glViewport(0, 0, windowDims[0], windowDims[1])
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
-        entities.forEach { entity -> entity.render(program, pos!!) }
+        entities.forEach { entity -> entity.render(program, pos) }
 
         glfwSwapBuffers(windowHandle)
     }

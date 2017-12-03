@@ -12,11 +12,11 @@ object KeyboardHandler {
 
     private val keyDown = BooleanArray(GLFW_KEY_LAST + 1)
 
-    fun init(windowHandle: Long) {
-        glfwSetKeyCallback(windowHandle, object : GLFWKeyCallback() {
+    fun init(core: CoreDispatch) {
+        glfwSetKeyCallback(core.windowHandle, object : GLFWKeyCallback() {
             override fun invoke(window: Long, key: Int, scancode: Int, action: Int, mods: Int) {
                 if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
-                    glfwSetWindowShouldClose(windowHandle, true)
+                    core.stop()
                 }
 
                 keyDown[key] = action == GLFW_PRESS || action == GLFW_REPEAT
