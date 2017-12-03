@@ -11,7 +11,6 @@ import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL32.GL_DEPTH_CLAMP
 import org.lwjgl.system.MemoryStack
-import java.io.IOException
 import java.nio.FloatBuffer
 import java.util.*
 
@@ -21,8 +20,7 @@ import java.util.*
  * @since 05-24-2017
  * License terms: https://www.github.com/Octogonapus/Pelican/blob/master/LICENSE.md
  */
-class RenderingEngine @Throws(IOException::class)
-constructor(private val windowHandle: Long, private val fov: Double) {
+class RenderingEngine(private val windowHandle: Long, private val fov: Double) {
     private val program: Int
     private val entities: MutableList<Entity>
 
@@ -95,8 +93,7 @@ constructor(private val windowHandle: Long, private val fov: Double) {
         entities.add(entity)
     }
 
-    fun render(windowDims: IntArray, mousePos: FloatArray) {
-        val dt = ((System.nanoTime() - lastTime) / 1E9).toFloat()
+    fun render(windowDims: IntArray, mousePos: FloatArray, dt: Float) {
         val move = dt * 0.05f
 
         cameraMat!!.positiveZ(dir!!).negate().mul(move)

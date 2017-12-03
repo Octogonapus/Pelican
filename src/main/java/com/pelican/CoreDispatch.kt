@@ -136,7 +136,7 @@ class CoreDispatch(width: Int, height: Int, frameCap: Double) {
 
             if (render) {
                 //render new frame
-                renderingEngine!!.render(windowDims, mousePos)
+                renderingEngine!!.render(windowDims, mousePos, frameTime.toFloat() * 200)
                 frames++
             } else {
                 try {
